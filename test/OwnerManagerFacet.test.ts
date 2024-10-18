@@ -289,4 +289,36 @@ describe('=> OwnerManagerFacet', () => {
             await expect(multiSigVerifyAndExecuteDiamond.verifyExecute(signers, signatures, removeOwnerCalldata, await getNonce(multiSigVerifyAndExecuteDiamond))).to.emit(ownerManagerDiamond, "OwnerRemoved").withArgs(ownerAddressList[1])
         })
     })
+    describe("# changeThreshold", () => {
+        it('Should change threshold', async () => {
+            const validThreshould = 3
+            const removeOwnerCalldata = ownerManagerFacet.interface.encodeFunctionData('changeThreshold', [validThreshould])
+
+            const { operationHash } = generateOperationHash(chainId.toString(), await diamond.getAddress(), removeOwnerCalldata, await getNonce(multiSigVerifyAndExecuteDiamond))
+            const { signers, signatures } = await signMsgHash(ownerList, operationHash)
+
+            expect(await multiSigVerifyAndExecuteDiamond.verifyExecute(signers, signatures, removeOwnerCalldata, await getNonce(multiSigVerifyAndExecuteDiamond))).to.emit(ownerManagerDiamond, "ThresholdChanged")
+        })
+        it("Should revert if call is not self",async () => {
+            await expect(ownerManagerDiamond.changeThreshold(3)).to.be.revertedWithCustomError(ownerManagerDiamond, "CallerNotSelf")
+        })
+        it("Should revert if new threshold is bigger than owner count",async () => {
+            const invalidThreshold = 10
+            const removeOwnerCalldata = ownerManagerFacet.interface.encodeFunctionData('changeThreshold', [invalidThreshold])
+
+            const { operationHash } = generateOperationHash(chainId.toString(), await diamond.getAddress(), removeOwnerCalldata, await getNonce(multiSigVerifyAndExecuteDiamond))
+            const { signers, signatures } = await signMsgHash(ownerList, operationHash)
+
+            await expect(multiSigVerifyAndExecuteDiamond.verifyExecute(signers, signatures, removeOwnerCalldata, await getNonce(multiSigVerifyAndExecuteDiamond))).to.be.revertedWithCustomError(ownerManagerDiamond, "InvalidThreshold")
+        })
+        it("Should revert if new threshold is zero",async () => {
+            const zeroThreshold = 0
+            const removeOwnerCalldata = ownerManagerFacet.interface.encodeFunctionData('changeThreshold', [zeroThreshold])
+
+            const { operationHash } = generateOperationHash(chainId.toString(), await diamond.getAddress(), removeOwnerCalldata, await getNonce(multiSigVerifyAndExecuteDiamond))
+            const { signers, signatures } = await signMsgHash(ownerList, operationHash)
+
+            await expect(multiSigVerifyAndExecuteDiamond.verifyExecute(signers, signatures, removeOwnerCalldata, await getNonce(multiSigVerifyAndExecuteDiamond))).to.be.revertedWithCustomError(ownerManagerDiamond, "ZeroThreshold")
+        })
+    })
 })
