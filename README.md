@@ -1,1 +1,11 @@
-# smart-contract-wallet
+# Smart Contract Wallet
+
+## Install dependencies
+```
+yarn
+```
+
+## Run Test
+```
+yarn hardhat test
+```
