@@ -3,7 +3,7 @@ import { facetFixture, testERC20Fixture, testERC721Fixture } from './utils/fixtu
 import { diamondFixture, diamondAsFacetFixture } from './utils/fixtures/diamond'
 import { Signer, ZeroAddress, keccak256, toBeArray } from 'ethers'
 import { increaseTime } from './utils/helpers'
-import { Diamond, DiamondCutFacet, DiamondLoupeFacet, GetTokenFacet, MultiSigVerifyAndExecuteFacet, NativeCoinTransferFacet, OwnerManagerFacet, TestFacet, Test2Facet, TokenTransferFacet, Test3Facet, TestERC20, TestERC721 } from '../typechain-types'
+import { Diamond, DiamondCutFacet, DiamondLoupeFacet, GetTokenFacet, MultiSigVerifyAndExecuteFacet, NativeCoinTransferFacet, OwnerManagerFacet, TokenTransferFacet, TestERC20, TestERC721 } from '../typechain-types'
 import { expect } from 'chai'
 
 describe('=> TokenTransferFacet', () => {
@@ -14,9 +14,6 @@ describe('=> TokenTransferFacet', () => {
     let nativeCoinTransferFacet: NativeCoinTransferFacet
     let ownerManagerFacet: OwnerManagerFacet
     let tokenTransferFacet: TokenTransferFacet
-    let testFacet: TestFacet
-    let test2Facet: Test2Facet
-    let test3Facet: Test3Facet
     let testERC20: TestERC20
     let testERC721: TestERC721
 

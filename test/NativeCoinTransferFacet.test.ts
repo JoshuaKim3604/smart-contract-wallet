@@ -1,9 +1,9 @@
 import { ethers } from 'hardhat'
-import { facetFixture, testFacetFixture, test2FacetFixture, test3FacetFixture } from './utils/fixtures/facets'
+import { facetFixture, test2FacetFixture } from './utils/fixtures/facets'
 import { diamondFixture, diamondAsFacetFixture } from './utils/fixtures/diamond'
 import { Signer, ZeroAddress } from 'ethers'
 import { diamondCut, generateOperationHash, getSelectors, signMsgHash, FacetCutAction, encodeDiamondCut, fund, encodeTransferNativeCoin, getNonce } from './utils/helpers'
-import { Diamond, DiamondCutFacet, DiamondLoupeFacet, GetTokenFacet, MultiSigVerifyAndExecuteFacet, NativeCoinTransferFacet, OwnerManagerFacet, TestFacet, Test2Facet, TokenTransferFacet, Test3Facet } from '../typechain-types'
+import { Diamond, DiamondCutFacet, DiamondLoupeFacet, GetTokenFacet, MultiSigVerifyAndExecuteFacet, NativeCoinTransferFacet, OwnerManagerFacet, Test2Facet, TokenTransferFacet } from '../typechain-types'
 import { expect } from 'chai'
 
 describe('=> NativeCoinTransferFacet', () => {
@@ -14,9 +14,7 @@ describe('=> NativeCoinTransferFacet', () => {
     let nativeCoinTransferFacet: NativeCoinTransferFacet
     let ownerManagerFacet: OwnerManagerFacet
     let tokenTransferFacet: TokenTransferFacet
-    let testFacet: TestFacet
     let test2Facet: Test2Facet
-    let test3Facet: Test3Facet
 
     let diamondCutDiamond: DiamondCutFacet
     let diamondLoupeDiamond: DiamondLoupeFacet
@@ -56,16 +54,8 @@ describe('=> NativeCoinTransferFacet', () => {
         } = await facetFixture());
 
         ({
-            testFacet
-        } = await testFacetFixture());
-
-        ({
             test2Facet
         } = await test2FacetFixture());
-
-        ({
-            test3Facet
-        } = await test3FacetFixture());
 
         diamond = await diamondFixture(
             diamondCutFacet,
@@ -97,7 +87,7 @@ describe('=> NativeCoinTransferFacet', () => {
 
         const cut = diamondCut(await test2Facet.getAddress(), FacetCutAction.Add, getSelectors(test2Facet))
         const diamondCutCalldata = encodeDiamondCut(cut, ZeroAddress, "0x00")
-        const { operationHash, msgHash } = generateOperationHash(chainId.toString(), await diamond.getAddress(), diamondCutCalldata, Number(await getNonce(multiSigVerifyAndExecuteDiamond)))
+        const { operationHash } = generateOperationHash(chainId.toString(), await diamond.getAddress(), diamondCutCalldata, Number(await getNonce(multiSigVerifyAndExecuteDiamond)))
         const { signers, signatures } = await signMsgHash(ownerList, operationHash)
         await expect(multiSigVerifyAndExecuteDiamond.verifyExecute(signers, signatures, diamondCutCalldata, Number(await getNonce(multiSigVerifyAndExecuteFacet)))).to.emit(diamondCutDiamond, "DiamondCut")
     })
@@ -107,7 +97,7 @@ describe('=> NativeCoinTransferFacet', () => {
 
         const transferCalldata = encodeTransferNativeCoin(await owner1.getAddress(), 10)
 
-        const { operationHash, msgHash } = generateOperationHash(chainId.toString(), await diamond.getAddress(), transferCalldata, Number(await multiSigVerifyAndExecuteDiamond.getNonce()))
+        const { operationHash } = generateOperationHash(chainId.toString(), await diamond.getAddress(), transferCalldata, Number(await multiSigVerifyAndExecuteDiamond.getNonce()))
 
         const { signers, signatures } = await signMsgHash(ownerList, operationHash)
 

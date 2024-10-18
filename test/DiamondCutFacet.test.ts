@@ -25,7 +25,6 @@ describe('=> DiamondCutFacet', () => {
     let nativeCoinTransferDiamond: NativeCoinTransferFacet
     let ownerManagerDiamond: OwnerManagerFacet
     let tokenTransferDiamond: TokenTransferFacet
-    let testDiamond: TestFacet
 
     let diamond: Diamond
     let threshold: number = 4

@@ -4,7 +4,7 @@ import { facetFixture } from './utils/fixtures/facets'
 import { diamondFixture, diamondAsFacetFixture } from './utils/fixtures/diamond'
 import { Signer } from 'ethers'
 import { getSelectors, getSalt } from './utils/helpers'
-import { Diamond, DiamondCutFacet, DiamondLoupeFacet, GetTokenFacet, MultiSigVerifyAndExecuteFacet, NativeCoinTransferFacet, OwnerManagerFacet, TestFacet, Test2Facet, TokenTransferFacet, Test3Facet } from '../typechain-types'
+import { Diamond, DiamondCutFacet, DiamondLoupeFacet, GetTokenFacet, MultiSigVerifyAndExecuteFacet, NativeCoinTransferFacet, OwnerManagerFacet, TokenTransferFacet } from '../typechain-types'
 import { expect } from 'chai'
 
 describe('=> DiamondLoupeFacet', () => {
@@ -15,9 +15,6 @@ describe('=> DiamondLoupeFacet', () => {
     let nativeCoinTransferFacet: NativeCoinTransferFacet
     let ownerManagerFacet: OwnerManagerFacet
     let tokenTransferFacet: TokenTransferFacet
-    let testFacet: TestFacet
-    let test2Facet: Test2Facet
-    let test3Facet: Test3Facet
 
     let diamondCutDiamond: DiamondCutFacet
     let diamondLoupeDiamond: DiamondLoupeFacet
@@ -26,26 +23,18 @@ describe('=> DiamondLoupeFacet', () => {
     let nativeCoinTransferDiamond: NativeCoinTransferFacet
     let ownerManagerDiamond: OwnerManagerFacet
     let tokenTransferDiamond: TokenTransferFacet
-    let testDiamond: TestFacet
 
     let diamond: Diamond
     let threshold: number = 4
-    let chainId: bigint
-    let defaultSalt: number = 0
 
     let owner1: Signer;
     let owner2: Signer;
     let owner3: Signer;
     let owner4: Signer;
     let owner5: Signer;
-    let ownerList: Array<Signer>;
 
     before(async () => {
         [owner1, owner2, owner3, owner4, owner5] = await ethers.getSigners();
-
-        ownerList = [owner1, owner2, owner3, owner4, owner5]
-
-        chainId = (await ethers.provider.getNetwork()).chainId;
     })
     beforeEach(async () => {
         ({

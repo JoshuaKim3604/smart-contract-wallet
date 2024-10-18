@@ -1,9 +1,9 @@
 import { ethers } from 'hardhat'
-import { facetFixture, testFacetFixture, test2FacetFixture, test3FacetFixture } from './utils/fixtures/facets'
+import { facetFixture, test2FacetFixture } from './utils/fixtures/facets'
 import { diamondFixture, diamondAsFacetFixture } from './utils/fixtures/diamond'
 import { Signer, ZeroAddress } from 'ethers'
 import { diamondCut, generateOperationHash, getSelectors, signMsgHash, FacetCutAction, encodeDiamondCut, getNonce, OneAddress } from './utils/helpers'
-import { Diamond, DiamondCutFacet, DiamondLoupeFacet, GetTokenFacet, MultiSigVerifyAndExecuteFacet, NativeCoinTransferFacet, OwnerManagerFacet, TestFacet, Test2Facet, TokenTransferFacet, Test3Facet } from '../typechain-types'
+import { Diamond, DiamondCutFacet, DiamondLoupeFacet, GetTokenFacet, MultiSigVerifyAndExecuteFacet, NativeCoinTransferFacet, OwnerManagerFacet, Test2Facet, TokenTransferFacet } from '../typechain-types'
 import { expect } from 'chai'
 
 describe('=> OwnerManagerFacet', () => {
@@ -14,9 +14,7 @@ describe('=> OwnerManagerFacet', () => {
     let nativeCoinTransferFacet: NativeCoinTransferFacet
     let ownerManagerFacet: OwnerManagerFacet
     let tokenTransferFacet: TokenTransferFacet
-    let testFacet: TestFacet
     let test2Facet: Test2Facet
-    let test3Facet: Test3Facet
 
     let diamondCutDiamond: DiamondCutFacet
     let diamondLoupeDiamond: DiamondLoupeFacet
@@ -66,16 +64,8 @@ describe('=> OwnerManagerFacet', () => {
         } = await facetFixture());
 
         ({
-            testFacet
-        } = await testFacetFixture());
-
-        ({
             test2Facet
         } = await test2FacetFixture());
-
-        ({
-            test3Facet
-        } = await test3FacetFixture());
 
         diamond = await diamondFixture(
             diamondCutFacet,

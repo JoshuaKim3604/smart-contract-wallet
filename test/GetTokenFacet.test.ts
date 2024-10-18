@@ -26,19 +26,15 @@ describe('=> GetTokenFacet', () => {
     let diamond: Diamond
     let threshold: number = 4
     let chainId: bigint
-    let defaultSalt: number = 0
 
     let owner1: Signer;
     let owner2: Signer;
     let owner3: Signer;
     let owner4: Signer;
     let owner5: Signer;
-    let ownerList: Array<Signer>;
 
     before(async () => {
         [owner1, owner2, owner3, owner4, owner5] = await ethers.getSigners();
-
-        ownerList = [owner1, owner2, owner3, owner4, owner5]
 
         chainId = (await ethers.provider.getNetwork()).chainId;
     })
