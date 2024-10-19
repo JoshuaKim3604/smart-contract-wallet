@@ -2,8 +2,8 @@
 pragma solidity 0.8.27;
 
 import { LibDiamond } from "../libraries/LibDiamond.sol";
-import { IDiamondCutFacet } from "../interfaces/IDiamondCutFacet.sol";
 import { SelfCallChecker } from "./utils/SelfCallChecker.sol";
+import { IDiamondCutFacet } from "../interfaces/IDiamondCutFacet.sol";
 
 contract DiamondCutFacet is IDiamondCutFacet, SelfCallChecker {
 

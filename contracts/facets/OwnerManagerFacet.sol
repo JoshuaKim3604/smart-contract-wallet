@@ -3,8 +3,9 @@ pragma solidity 0.8.27;
 
 import { LibMultiSigStorage } from "../libraries/LibMultiSigStorage.sol";
 import { SelfCallChecker } from "./utils/SelfCallChecker.sol";
+import { IOwnerManagerFacet } from "../interfaces/IOwnerManagerFacet.sol";
 
-contract OwnerManagerFacet is SelfCallChecker {
+contract OwnerManagerFacet is IOwnerManagerFacet, SelfCallChecker {
 
     address internal constant SENTINEL_OWNERS = address(0x1);
     address internal immutable self;
@@ -26,7 +27,7 @@ contract OwnerManagerFacet is SelfCallChecker {
         self = address(this);
     }
 
-    function setupOwners(address[] calldata _owners, uint256 _threshold) external {
+    function setupOwners(address[] calldata _owners, uint256 _threshold) external override {
         require(address(this) != self, InvalidCallRoute());
 
         LibMultiSigStorage.MultiSigStorage storage ds = LibMultiSigStorage.multiSigStorage();
@@ -51,7 +52,7 @@ contract OwnerManagerFacet is SelfCallChecker {
         ds.threshold = _threshold;
     }
     
-    function addOwner(address newOwner) external enforceSelfCall {
+    function addOwner(address newOwner) external override enforceSelfCall {
         LibMultiSigStorage.MultiSigStorage storage ds = LibMultiSigStorage.multiSigStorage();
 
         require(newOwner != address(0) && newOwner != SENTINEL_OWNERS && newOwner != address(this), InvalidOwnerAddress());
@@ -63,7 +64,7 @@ contract OwnerManagerFacet is SelfCallChecker {
         emit OwnerAdded(newOwner);
     }
 
-    function removeOwner(address prevOwner, address owner) external enforceSelfCall {
+    function removeOwner(address prevOwner, address owner) external override enforceSelfCall {
         LibMultiSigStorage.MultiSigStorage storage ds = LibMultiSigStorage.multiSigStorage();
 
         require(owner != address(0) && owner != SENTINEL_OWNERS, InvalidOwnerAddress());
@@ -77,7 +78,7 @@ contract OwnerManagerFacet is SelfCallChecker {
         emit OwnerRemoved(owner);
     }
 
-    function changeThreshold(uint _threshold) external enforceSelfCall {
+    function changeThreshold(uint _threshold) external override enforceSelfCall {
         LibMultiSigStorage.MultiSigStorage storage ds = LibMultiSigStorage.multiSigStorage();
 
         require(_threshold <= ds.ownerCount, InvalidThreshold());
@@ -88,7 +89,7 @@ contract OwnerManagerFacet is SelfCallChecker {
         emit ThresholdChanged(_threshold);
     }
 
-    function getOwners() external view returns (address[] memory owners) {
+    function getOwners() external view override returns (address[] memory owners) {
         LibMultiSigStorage.MultiSigStorage storage ds = LibMultiSigStorage.multiSigStorage();
 
         owners = new address[](ds.ownerCount);
@@ -102,7 +103,7 @@ contract OwnerManagerFacet is SelfCallChecker {
         }
     }
 
-    function isOwner(address _owner) external view returns (bool) {
+    function isOwner(address _owner) external view override returns (bool) {
         return (LibMultiSigStorage.multiSigStorage().owners[_owner] != address(0) && _owner != SENTINEL_OWNERS);
     }
 }

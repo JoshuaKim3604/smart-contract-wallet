@@ -4,8 +4,9 @@ pragma solidity 0.8.27;
 import { LibMultiSigStorage } from "../libraries/LibMultiSigStorage.sol";
 import { LibMultiSig } from "../libraries/LibMultiSig.sol";
 import { IDiamondCutFacet } from "../interfaces/IDiamondCutFacet.sol";
+import { IMultiSigVerifyAndExecuteFacet } from "../interfaces/IMultiSigVerifyAndExecuteFacet.sol";
 
-contract MultiSigVerifyAndExecuteFacet {
+contract MultiSigVerifyAndExecuteFacet is IMultiSigVerifyAndExecuteFacet {
 
     error InvalidNonce();
     error InvalidSignerAndSignatureLength();
@@ -16,7 +17,7 @@ contract MultiSigVerifyAndExecuteFacet {
         bytes[] calldata _signatures,
         bytes calldata _calldata,
         uint256 _nonce
-    ) external {
+    ) external override {
         bytes32 operationHash = keccak256(
             abi.encode(block.chainid, address(this), _calldata, _nonce)
         );
@@ -44,7 +45,7 @@ contract MultiSigVerifyAndExecuteFacet {
         }
     }
 
-    function getNonce() external view returns (uint256) {
+    function getNonce() external override view returns (uint256) {
         return LibMultiSigStorage.multiSigStorage().nonce;
     }
 }
