@@ -2,7 +2,6 @@
 pragma solidity 0.8.27;
 
 interface IGetTokenFacet {
-
     function onERC1155Received(
         address,
         address,
@@ -36,5 +35,4 @@ interface IGetTokenFacet {
     ) external pure;
 
     function supportsInterface(bytes4 interfaceId) external view returns (bool);
-
 }

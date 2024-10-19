@@ -1,13 +1,12 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.27;
 
-import { LibMultiSigStorage } from "../libraries/LibMultiSigStorage.sol";
-import { LibMultiSig } from "../libraries/LibMultiSig.sol";
-import { IDiamondCutFacet } from "../interfaces/IDiamondCutFacet.sol";
-import { IMultiSigVerifyAndExecuteFacet } from "../interfaces/IMultiSigVerifyAndExecuteFacet.sol";
+import {LibMultiSigStorage} from "../libraries/LibMultiSigStorage.sol";
+import {LibMultiSig} from "../libraries/LibMultiSig.sol";
+import {IDiamondCutFacet} from "../interfaces/IDiamondCutFacet.sol";
+import {IMultiSigVerifyAndExecuteFacet} from "../interfaces/IMultiSigVerifyAndExecuteFacet.sol";
 
 contract MultiSigVerifyAndExecuteFacet is IMultiSigVerifyAndExecuteFacet {
-
     error InvalidNonce();
     error InvalidSignerAndSignatureLength();
     error InvalidSignerLength();
@@ -28,7 +27,10 @@ contract MultiSigVerifyAndExecuteFacet is IMultiSigVerifyAndExecuteFacet {
         LibMultiSigStorage.MultiSigStorage storage ds = LibMultiSigStorage
             .multiSigStorage();
         require(ds.nonce == _nonce, InvalidNonce());
-        require(_signers.length == _signatures.length, InvalidSignerAndSignatureLength());
+        require(
+            _signers.length == _signatures.length,
+            InvalidSignerAndSignatureLength()
+        );
         require(ds.threshold <= _signers.length, InvalidSignerLength());
 
         LibMultiSig.verifyMultiSig(_signers, _signatures, msgHash);
@@ -45,7 +47,7 @@ contract MultiSigVerifyAndExecuteFacet is IMultiSigVerifyAndExecuteFacet {
         }
     }
 
-    function getNonce() external override view returns (uint256) {
+    function getNonce() external view override returns (uint256) {
         return LibMultiSigStorage.multiSigStorage().nonce;
     }
 }

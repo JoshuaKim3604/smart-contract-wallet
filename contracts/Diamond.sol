@@ -1,17 +1,16 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.27;
 
-import { LibDiamond } from "./libraries/LibDiamond.sol";
-import { IDiamondCutFacet } from "./interfaces/IDiamondCutFacet.sol";
-import { IDiamondLoupeFacet } from "./interfaces/IDiamondLoupeFacet.sol";
-import { IGetTokenFacet } from "./interfaces/IGetTokenFacet.sol";
-import { IMultiSigVerifyAndExecuteFacet } from "./interfaces/IMultiSigVerifyAndExecuteFacet.sol";
-import { INativeCoinTransferFacet } from "./interfaces/INativeCoinTransferFacet.sol";
-import { IOwnerManagerFacet } from "./interfaces/IOwnerManagerFacet.sol";
-import { ITokenTransferFacet } from "./interfaces/ITokenTransferFacet.sol";
+import {LibDiamond} from "./libraries/LibDiamond.sol";
+import {IDiamondCutFacet} from "./interfaces/IDiamondCutFacet.sol";
+import {IDiamondLoupeFacet} from "./interfaces/IDiamondLoupeFacet.sol";
+import {IGetTokenFacet} from "./interfaces/IGetTokenFacet.sol";
+import {IMultiSigVerifyAndExecuteFacet} from "./interfaces/IMultiSigVerifyAndExecuteFacet.sol";
+import {INativeCoinTransferFacet} from "./interfaces/INativeCoinTransferFacet.sol";
+import {IOwnerManagerFacet} from "./interfaces/IOwnerManagerFacet.sol";
+import {ITokenTransferFacet} from "./interfaces/ITokenTransferFacet.sol";
 
 contract Diamond {
-
     constructor(
         address _diamondCutFacet,
         address _diamondLoupeFacet,
@@ -42,7 +41,9 @@ contract Diamond {
 
         bytes4[] memory getTokenFacetSelectors = new bytes4[](5);
         getTokenFacetSelectors[0] = IGetTokenFacet.onERC1155Received.selector;
-        getTokenFacetSelectors[1] = IGetTokenFacet.onERC1155BatchReceived.selector;
+        getTokenFacetSelectors[1] = IGetTokenFacet
+            .onERC1155BatchReceived
+            .selector;
         getTokenFacetSelectors[2] = IGetTokenFacet.onERC721Received.selector;
         getTokenFacetSelectors[3] = IGetTokenFacet.tokensReceived.selector;
         getTokenFacetSelectors[4] = IGetTokenFacet.supportsInterface.selector;
@@ -53,7 +54,9 @@ contract Diamond {
         multiSigVerifyAndExecuteFacetSelectors[
             0
         ] = IMultiSigVerifyAndExecuteFacet.verifyExecute.selector;
-        multiSigVerifyAndExecuteFacetSelectors[1] = IMultiSigVerifyAndExecuteFacet.getNonce.selector;
+        multiSigVerifyAndExecuteFacetSelectors[
+            1
+        ] = IMultiSigVerifyAndExecuteFacet.getNonce.selector;
 
         bytes4[] memory nativeCoinTransferFacetSelectors = new bytes4[](1);
         nativeCoinTransferFacetSelectors[0] = INativeCoinTransferFacet
@@ -80,7 +83,9 @@ contract Diamond {
         tokenTransferFacetSelectors[2] = ITokenTransferFacet
             .executeProposal
             .selector;
-        tokenTransferFacetSelectors[3] = ITokenTransferFacet.getProposalNonce.selector;
+        tokenTransferFacetSelectors[3] = ITokenTransferFacet
+            .getProposalNonce
+            .selector;
 
         cut[0] = IDiamondCutFacet.FacetCut({
             facetAddress: _diamondCutFacet,
@@ -126,7 +131,14 @@ contract Diamond {
 
         LibDiamond.diamondCut(cut, address(0), "");
 
-        (bool success, bytes memory returndata) = _ownerManagerFacet.delegatecall(abi.encodeWithSelector(IOwnerManagerFacet.setupOwners.selector, _ownerAddresses, _threshold));
+        (bool success, bytes memory returndata) = _ownerManagerFacet
+            .delegatecall(
+                abi.encodeWithSelector(
+                    IOwnerManagerFacet.setupOwners.selector,
+                    _ownerAddresses,
+                    _threshold
+                )
+            );
         if (!success) {
             assembly {
                 revert(add(returndata, 0x20), mload(returndata))
@@ -135,7 +147,6 @@ contract Diamond {
     }
 
     fallback() external payable {
-
         LibDiamond.DiamondStorage storage ds;
         bytes32 position = LibDiamond.DIAMOND_STORAGE_POSITION;
 
@@ -147,7 +158,6 @@ contract Diamond {
         require(facet != address(0), "Diamond: Function does not exist");
 
         assembly {
-
             calldatacopy(0, 0, calldatasize())
 
             let result := delegatecall(gas(), facet, 0, calldatasize(), 0, 0)

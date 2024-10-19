@@ -1,12 +1,11 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.27;
 
-import { LibMultiSigStorage } from "../libraries/LibMultiSigStorage.sol";
-import { SelfCallChecker } from "./utils/SelfCallChecker.sol";
-import { IOwnerManagerFacet } from "../interfaces/IOwnerManagerFacet.sol";
+import {LibMultiSigStorage} from "../libraries/LibMultiSigStorage.sol";
+import {SelfCallChecker} from "./utils/SelfCallChecker.sol";
+import {IOwnerManagerFacet} from "../interfaces/IOwnerManagerFacet.sol";
 
 contract OwnerManagerFacet is IOwnerManagerFacet, SelfCallChecker {
-
     address internal constant SENTINEL_OWNERS = address(0x1);
     address internal immutable self;
 
@@ -27,11 +26,15 @@ contract OwnerManagerFacet is IOwnerManagerFacet, SelfCallChecker {
         self = address(this);
     }
 
-    function setupOwners(address[] calldata _owners, uint256 _threshold) external override {
+    function setupOwners(
+        address[] calldata _owners,
+        uint256 _threshold
+    ) external override {
         require(address(this) != self, InvalidCallRoute());
 
-        LibMultiSigStorage.MultiSigStorage storage ds = LibMultiSigStorage.multiSigStorage();
-        
+        LibMultiSigStorage.MultiSigStorage storage ds = LibMultiSigStorage
+            .multiSigStorage();
+
         require(ds.threshold == 0, AlreadySetup());
         require(_owners.length >= _threshold, OwnerLengthTooShort());
         require(_threshold != 0, InvalidThreshold());
@@ -40,7 +43,13 @@ contract OwnerManagerFacet is IOwnerManagerFacet, SelfCallChecker {
         for (uint256 i = 0; i < _owners.length; i++) {
             address owner = _owners[i];
 
-            require(owner != address(0) && owner != SENTINEL_OWNERS && owner != address(this) && currentOwner != owner, InvalidOwnerAddress());
+            require(
+                owner != address(0) &&
+                    owner != SENTINEL_OWNERS &&
+                    owner != address(this) &&
+                    currentOwner != owner,
+                InvalidOwnerAddress()
+            );
             require(ds.owners[owner] == address(0), DuplicateOwner());
 
             ds.owners[currentOwner] = owner;
@@ -51,12 +60,18 @@ contract OwnerManagerFacet is IOwnerManagerFacet, SelfCallChecker {
         ds.ownerCount = _owners.length;
         ds.threshold = _threshold;
     }
-    
-    function addOwner(address newOwner) external override enforceSelfCall {
-        LibMultiSigStorage.MultiSigStorage storage ds = LibMultiSigStorage.multiSigStorage();
 
-        require(newOwner != address(0) && newOwner != SENTINEL_OWNERS && newOwner != address(this), InvalidOwnerAddress());
-        
+    function addOwner(address newOwner) external override enforceSelfCall {
+        LibMultiSigStorage.MultiSigStorage storage ds = LibMultiSigStorage
+            .multiSigStorage();
+
+        require(
+            newOwner != address(0) &&
+                newOwner != SENTINEL_OWNERS &&
+                newOwner != address(this),
+            InvalidOwnerAddress()
+        );
+
         ds.owners[newOwner] = ds.owners[SENTINEL_OWNERS];
         ds.owners[SENTINEL_OWNERS] = newOwner;
         ds.ownerCount++;
@@ -64,10 +79,17 @@ contract OwnerManagerFacet is IOwnerManagerFacet, SelfCallChecker {
         emit OwnerAdded(newOwner);
     }
 
-    function removeOwner(address prevOwner, address owner) external override enforceSelfCall {
-        LibMultiSigStorage.MultiSigStorage storage ds = LibMultiSigStorage.multiSigStorage();
+    function removeOwner(
+        address prevOwner,
+        address owner
+    ) external override enforceSelfCall {
+        LibMultiSigStorage.MultiSigStorage storage ds = LibMultiSigStorage
+            .multiSigStorage();
 
-        require(owner != address(0) && owner != SENTINEL_OWNERS, InvalidOwnerAddress());
+        require(
+            owner != address(0) && owner != SENTINEL_OWNERS,
+            InvalidOwnerAddress()
+        );
         require(ds.owners[prevOwner] == owner, InvalidPreviousOwner());
         require(ds.ownerCount - 1 >= ds.threshold, OwnerLengthTooShort());
 
@@ -78,8 +100,11 @@ contract OwnerManagerFacet is IOwnerManagerFacet, SelfCallChecker {
         emit OwnerRemoved(owner);
     }
 
-    function changeThreshold(uint _threshold) external override enforceSelfCall {
-        LibMultiSigStorage.MultiSigStorage storage ds = LibMultiSigStorage.multiSigStorage();
+    function changeThreshold(
+        uint _threshold
+    ) external override enforceSelfCall {
+        LibMultiSigStorage.MultiSigStorage storage ds = LibMultiSigStorage
+            .multiSigStorage();
 
         require(_threshold <= ds.ownerCount, InvalidThreshold());
         require(_threshold > 0, ZeroThreshold());
@@ -89,8 +114,14 @@ contract OwnerManagerFacet is IOwnerManagerFacet, SelfCallChecker {
         emit ThresholdChanged(_threshold);
     }
 
-    function getOwners() external view override returns (address[] memory owners) {
-        LibMultiSigStorage.MultiSigStorage storage ds = LibMultiSigStorage.multiSigStorage();
+    function getOwners()
+        external
+        view
+        override
+        returns (address[] memory owners)
+    {
+        LibMultiSigStorage.MultiSigStorage storage ds = LibMultiSigStorage
+            .multiSigStorage();
 
         owners = new address[](ds.ownerCount);
 
@@ -104,6 +135,8 @@ contract OwnerManagerFacet is IOwnerManagerFacet, SelfCallChecker {
     }
 
     function isOwner(address _owner) external view override returns (bool) {
-        return (LibMultiSigStorage.multiSigStorage().owners[_owner] != address(0) && _owner != SENTINEL_OWNERS);
+        return (LibMultiSigStorage.multiSigStorage().owners[_owner] !=
+            address(0) &&
+            _owner != SENTINEL_OWNERS);
     }
 }

@@ -2,8 +2,8 @@
 pragma solidity 0.8.27;
 
 library LibVoteStorage {
-
-    bytes32 constant DIAMOND_VOTE_STORAGE_POSITION = keccak256("diamond.vote.storage");
+    bytes32 constant DIAMOND_VOTE_STORAGE_POSITION =
+        keccak256("diamond.vote.storage");
 
     struct Proposal {
         address to;
@@ -21,8 +21,8 @@ library LibVoteStorage {
     }
 
     struct ProposalInfo {
-        mapping (bytes32 => Proposal) proposal;
-        mapping (bytes32 => mapping(address => uint256)) proposalVote;
+        mapping(bytes32 => Proposal) proposal;
+        mapping(bytes32 => mapping(address => uint256)) proposalVote;
         uint256 nonce;
     }
 
@@ -32,5 +32,4 @@ library LibVoteStorage {
             ms.slot := slot
         }
     }
-
 }

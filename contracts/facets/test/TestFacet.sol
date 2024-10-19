@@ -2,7 +2,6 @@
 pragma solidity 0.8.27;
 
 contract TestFacet {
-
     event NumberIncremented();
 
     uint256 private number;

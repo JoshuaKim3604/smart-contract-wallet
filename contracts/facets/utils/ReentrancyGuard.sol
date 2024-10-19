@@ -2,11 +2,12 @@
 pragma solidity 0.8.27;
 
 abstract contract ReentrancyGuard {
-
-    modifier nonReentrant {
+    modifier nonReentrant() {
         assembly {
-            if tload(0) { revert(0, 0) }
-            tstore(0,1)
+            if tload(0) {
+                revert(0, 0)
+            }
+            tstore(0, 1)
         }
         _;
         assembly {

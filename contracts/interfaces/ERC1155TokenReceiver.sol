@@ -2,7 +2,6 @@
 pragma solidity 0.8.27;
 
 interface ERC1155TokenReceiver {
-
     function onERC1155Received(
         address operator,
         address from,
@@ -18,5 +17,4 @@ interface ERC1155TokenReceiver {
         uint256[] calldata values,
         bytes calldata data
     ) external returns (bytes4);
-    
 }
