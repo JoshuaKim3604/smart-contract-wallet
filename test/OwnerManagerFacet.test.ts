@@ -98,10 +98,10 @@ describe('=> OwnerManagerFacet', () => {
     })
 
     describe('# setupOwners', () => {
-        it("Should revert if called directly not using delegatecall", async () => {
+        it('Should revert if called directly not using delegatecall', async () => {
             await expect(ownerManagerFacet.setupOwners(ownerList, threshold)).to.be.revertedWithCustomError(ownerManagerDiamond, "InvalidCallRoute")
         })
-        it("Should revert if called twice", async () => {
+        it('Should revert if called twice', async () => {
             const setupOwnersCalldata = ownerManagerFacet.interface.encodeFunctionData('setupOwners', [ownerAddressList, threshold])
 
             const { operationHash } = generateOperationHash(chainId.toString(), await diamond.getAddress(), setupOwnersCalldata, await getNonce(multiSigVerifyAndExecuteDiamond))
@@ -109,7 +109,7 @@ describe('=> OwnerManagerFacet', () => {
 
             await expect(multiSigVerifyAndExecuteDiamond.verifyExecute(signers, signatures, setupOwnersCalldata, await getNonce(multiSigVerifyAndExecuteDiamond))).to.be.revertedWithCustomError(ownerManagerDiamond, "AlreadySetup")
         })
-        it("Should revert if owner length is smaller than threshold", async () => {
+        it('Should revert if owner length is smaller than threshold', async () => {
             const invalidThreshold = 100
 
             await expect(diamondFixture(
@@ -124,7 +124,7 @@ describe('=> OwnerManagerFacet', () => {
                 invalidThreshold
             )).to.be.revertedWithCustomError(ownerManagerDiamond, "OwnerLengthTooShort")
         })
-        it("Should revert if duplicate owner exists", async () => {
+        it('Should revert if duplicate owner exists', async () => {
             const invalidOwnerList = [await owner1.getAddress(), await owner2.getAddress(), await owner1.getAddress()]
             const customThreshold = 3
 
@@ -140,7 +140,7 @@ describe('=> OwnerManagerFacet', () => {
                 customThreshold
             )).to.be.revertedWithCustomError(ownerManagerDiamond, "DuplicateOwner")
         })
-        it("Should set owners", async () => {
+        it('Should set owners', async () => {
             diamond = await diamondFixture(
                 diamondCutFacet,
                 diamondLoupeFacet,
@@ -205,10 +205,10 @@ describe('=> OwnerManagerFacet', () => {
         })
     })
     describe('# removeOwner', () => {
-        it("Should revert if not called by self -> could be done through multi-sig", async () => {
+        it('Should revert if not called by self -> could be done through multi-sig', async () => {
             await expect(ownerManagerDiamond.removeOwner(ownerAddressList[0], ownerAddressList[1])).to.be.revertedWithCustomError(ownerManagerDiamond,'CallerNotSelf')
         })
-        it("Should provide valid previous entity for sentinel list", async () => {
+        it('Should provide valid previous entity for sentinel list', async () => {
             const removeOwnerCalldata = ownerManagerFacet.interface.encodeFunctionData('removeOwner', [ownerAddressList[4], ownerAddressList[1]])
 
             const { operationHash } = generateOperationHash(chainId.toString(), await diamond.getAddress(), removeOwnerCalldata, await getNonce(multiSigVerifyAndExecuteDiamond))
@@ -216,7 +216,7 @@ describe('=> OwnerManagerFacet', () => {
 
             await expect(multiSigVerifyAndExecuteDiamond.verifyExecute(signers, signatures, removeOwnerCalldata, await getNonce(multiSigVerifyAndExecuteDiamond))).to.be.revertedWithCustomError(ownerManagerDiamond, "InvalidPreviousOwner")
         })
-        it("Should revert if zero address", async () => {
+        it('Should revert if zero address', async () => {
             const removeOwnerCalldata = ownerManagerFacet.interface.encodeFunctionData('removeOwner', [ownerAddressList[4], ZeroAddress])
 
             const { operationHash } = generateOperationHash(chainId.toString(), await diamond.getAddress(), removeOwnerCalldata, await getNonce(multiSigVerifyAndExecuteDiamond))
@@ -224,7 +224,7 @@ describe('=> OwnerManagerFacet', () => {
 
             await expect(multiSigVerifyAndExecuteDiamond.verifyExecute(signers, signatures, removeOwnerCalldata, await getNonce(multiSigVerifyAndExecuteDiamond))).to.be.revertedWithCustomError(ownerManagerDiamond, "InvalidOwnerAddress")
         })
-        it("Should revert if one address", async () => {
+        it('Should revert if one address', async () => {
             const removeOwnerCalldata = ownerManagerFacet.interface.encodeFunctionData('removeOwner', [ownerAddressList[4], OneAddress])
 
             const { operationHash } = generateOperationHash(chainId.toString(), await diamond.getAddress(), removeOwnerCalldata, await getNonce(multiSigVerifyAndExecuteDiamond))
@@ -232,7 +232,7 @@ describe('=> OwnerManagerFacet', () => {
 
             await expect(multiSigVerifyAndExecuteDiamond.verifyExecute(signers, signatures, removeOwnerCalldata, await getNonce(multiSigVerifyAndExecuteDiamond))).to.be.revertedWithCustomError(ownerManagerDiamond, "InvalidOwnerAddress")
         })
-        it("Should revert if threshold is bigger than deducted owner count", async () => {
+        it('Should revert if threshold is bigger than deducted owner count', async () => {
             const tightThreshold = ownerAddressList.length
             diamond = await diamondFixture(
                 diamondCutFacet,
@@ -258,7 +258,7 @@ describe('=> OwnerManagerFacet', () => {
 
             await expect(multiSigVerifyAndExecuteDiamond.verifyExecute(signers, signatures, removeOwnerCalldata, await getNonce(multiSigVerifyAndExecuteDiamond))).to.be.revertedWithCustomError(ownerManagerDiamond, "OwnerLengthTooShort")
         })
-        it("Should remove owner", async () => {
+        it('Should remove owner', async () => {
             const ownerToBeRemoved = ownerAddressList[1]
             const removeOwnerCalldata = ownerManagerFacet.interface.encodeFunctionData('removeOwner', [ownerAddressList[0], ownerToBeRemoved])
 
@@ -279,7 +279,7 @@ describe('=> OwnerManagerFacet', () => {
             await expect(multiSigVerifyAndExecuteDiamond.verifyExecute(signers, signatures, removeOwnerCalldata, await getNonce(multiSigVerifyAndExecuteDiamond))).to.emit(ownerManagerDiamond, "OwnerRemoved").withArgs(ownerAddressList[1])
         })
     })
-    describe("# changeThreshold", () => {
+    describe('# changeThreshold', () => {
         it('Should change threshold', async () => {
             const validThreshould = 3
             const removeOwnerCalldata = ownerManagerFacet.interface.encodeFunctionData('changeThreshold', [validThreshould])
@@ -289,10 +289,10 @@ describe('=> OwnerManagerFacet', () => {
 
             expect(await multiSigVerifyAndExecuteDiamond.verifyExecute(signers, signatures, removeOwnerCalldata, await getNonce(multiSigVerifyAndExecuteDiamond))).to.emit(ownerManagerDiamond, "ThresholdChanged")
         })
-        it("Should revert if call is not self",async () => {
+        it('Should revert if call is not self',async () => {
             await expect(ownerManagerDiamond.changeThreshold(3)).to.be.revertedWithCustomError(ownerManagerDiamond, "CallerNotSelf")
         })
-        it("Should revert if new threshold is bigger than owner count",async () => {
+        it('Should revert if new threshold is bigger than owner count',async () => {
             const invalidThreshold = 10
             const removeOwnerCalldata = ownerManagerFacet.interface.encodeFunctionData('changeThreshold', [invalidThreshold])
 
@@ -301,7 +301,7 @@ describe('=> OwnerManagerFacet', () => {
 
             await expect(multiSigVerifyAndExecuteDiamond.verifyExecute(signers, signatures, removeOwnerCalldata, await getNonce(multiSigVerifyAndExecuteDiamond))).to.be.revertedWithCustomError(ownerManagerDiamond, "InvalidThreshold")
         })
-        it("Should revert if new threshold is zero",async () => {
+        it('Should revert if new threshold is zero',async () => {
             const zeroThreshold = 0
             const removeOwnerCalldata = ownerManagerFacet.interface.encodeFunctionData('changeThreshold', [zeroThreshold])
 

@@ -103,7 +103,7 @@ describe('=> TokenTransferFacet', () => {
     })
 
     describe('# createProposal', () => {
-        it("Should create proposal", async () => {
+        it('Should create proposal', async () => {
             let Proposal = {
                 to: await user1.getAddress(),
                 token: await testERC20.getAddress(),
@@ -120,7 +120,7 @@ describe('=> TokenTransferFacet', () => {
             }
             expect(await tokenTransferDiamond.createProposal(Proposal)).to.emit(tokenTransferDiamond, "ProposalCreated")
         })
-        it("Should revert if to address is zero address", async () => {
+        it('Should revert if to address is zero address', async () => {
             let ZeroAddressProposal = {
                 to: ZeroAddress,
                 token: await testERC20.getAddress(),
@@ -137,7 +137,7 @@ describe('=> TokenTransferFacet', () => {
             }
             await expect(tokenTransferDiamond.createProposal(ZeroAddressProposal)).to.be.revertedWithCustomError(tokenTransferDiamond, "InvalidTo")
         })
-        it("Should revert if token address is zero address", async () => {
+        it('Should revert if token address is zero address', async () => {
             let ZeroAddressProposal = {
                 to: await user1.getAddress(),
                 token: ZeroAddress,
@@ -154,7 +154,7 @@ describe('=> TokenTransferFacet', () => {
             }
             await expect(tokenTransferDiamond.createProposal(ZeroAddressProposal)).to.be.revertedWithCustomError(tokenTransferDiamond, "InvalidToken")
         })
-        it("Should revert if duration is smaller than min duration", async () => {
+        it('Should revert if duration is smaller than min duration', async () => {
             let minDurationProposal = {
                 to: await user1.getAddress(),
                 token: await testERC20.getAddress(),
@@ -171,8 +171,7 @@ describe('=> TokenTransferFacet', () => {
             }
             await expect(tokenTransferDiamond.createProposal(minDurationProposal)).to.be.revertedWithCustomError(tokenTransferDiamond, "InvalidDuration")
         })
-        
-        it("Should revert if start time is smaller than block timestamp", async () => {
+        it('Should revert if start time is smaller than block timestamp', async () => {
             let minDurationProposal = {
                 to: await user1.getAddress(),
                 token: await testERC20.getAddress(),
@@ -189,7 +188,7 @@ describe('=> TokenTransferFacet', () => {
             }
             await expect(tokenTransferDiamond.createProposal(minDurationProposal)).to.be.revertedWithCustomError(tokenTransferDiamond, "InvalidStartTime")
         })
-        it("Should revert if nonce is different", async () => {
+        it('Should revert if nonce is different', async () => {
             let minDurationProposal = {
                 to: await user1.getAddress(),
                 token: await testERC20.getAddress(),
@@ -206,7 +205,7 @@ describe('=> TokenTransferFacet', () => {
             }
             await expect(tokenTransferDiamond.createProposal(minDurationProposal)).to.be.revertedWithCustomError(tokenTransferDiamond, "InvalidNonce")
         })
-        it("Should revert if it is already executed", async () => {
+        it('Should revert if it is already executed', async () => {
             let alreadyExecutedProposal = {
                 to: await user1.getAddress(),
                 token: await testERC20.getAddress(),
@@ -224,7 +223,7 @@ describe('=> TokenTransferFacet', () => {
 
             await expect(tokenTransferDiamond.createProposal(alreadyExecutedProposal)).to.be.revertedWithCustomError(tokenTransferDiamond, "InvalidExecutionFlag")
         })
-        it("Should revert if chain id is different with current chain id", async () => {
+        it('Should revert if chain id is different with current chain id', async () => {
             let Proposal = {
                 to: await user1.getAddress(),
                 token: await testERC20.getAddress(),
@@ -242,7 +241,7 @@ describe('=> TokenTransferFacet', () => {
             await expect(tokenTransferDiamond.createProposal(Proposal)).to.be.revertedWithCustomError(tokenTransferDiamond, "InvalidChainId")
         })
     })
-    describe("# voteProposal", () => {
+    describe('# voteProposal', () => {
         let creationProposalNonce: bigint
         let createdProposalHash: string
         let defaultWindow = 100

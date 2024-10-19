@@ -77,7 +77,7 @@ describe('=> DiamondLoupeFacet', () => {
         let salt = getSalt()
     })
     describe('# facets', () => {
-        it("Should return facets in Diamond", async () => {
+        it('Should return facets in Diamond', async () => {
 
             const facetList = [
                 [
@@ -145,8 +145,8 @@ describe('=> DiamondLoupeFacet', () => {
         expect(facet).to.deep.equal(facetList);
 
         })
-        describe("# facetAddresses", () => {
-            it("Should return facetAddress", async () => {
+        describe('# facetAddresses', () => {
+            it('Should return facetAddress', async () => {
 
                 const facetAddressList = [
                     await diamondCutFacet.getAddress(),
@@ -160,14 +160,14 @@ describe('=> DiamondLoupeFacet', () => {
                 expect(await diamondLoupeDiamond.facetAddresses()).to.deep.equal(facetAddressList)
             })
         })
-        describe("# facetFunctionSelectors", () => {
-            it("Should return selectors",async () => {
+        describe('# facetFunctionSelectors', () => {
+            it('Should return selectors',async () => {
                 const facetSelectors = await getSelectors(diamondCutFacet)
                 expect(await diamondLoupeDiamond.facetFunctionSelectors(await diamondCutFacet.getAddress())).to.deep.equal(facetSelectors)
             })
         })
-        describe("# facetAddress", () => {
-            it("Should return facet address",async () => {
+        describe('# facetAddress', () => {
+            it('Should return facet address',async () => {
                 const facetAddress = await getSelectors(diamondCutFacet)[0]
 
                 expect(await diamondLoupeDiamond.facetAddress(facetAddress)).to.equal(await diamondCutFacet.getAddress())

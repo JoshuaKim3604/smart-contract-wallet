@@ -87,8 +87,8 @@ describe('=> MultiSigVerifyAndExecuteFacet', () => {
         } = await diamondAsFacetFixture(diamond));
     })
 
-    describe("# verifyExecute", () => {
-        it("Should transfer native coin", async () => {
+    describe('# verifyExecute', () => {
+        it('Should transfer native coin', async () => {
             await fund(await nativeCoinTransferDiamond.getAddress())
 
             const transferCalldata = encodeTransferNativeCoin(await testFacet.getAddress(), 10)
@@ -100,7 +100,7 @@ describe('=> MultiSigVerifyAndExecuteFacet', () => {
             await expect(multiSigVerifyAndExecuteDiamond.verifyExecute(signers, signatures, transferCalldata, Number(await getNonce(multiSigVerifyAndExecuteDiamond)))).to.emit(nativeCoinTransferDiamond, "NativeCoinTransferred")
             expect(await ethers.provider.getBalance(await testFacet.getAddress())).to.equal(10)
         })
-        it("Should revert if nonce is invalid", async () => {
+        it('Should revert if nonce is invalid', async () => {
             await fund(await nativeCoinTransferDiamond.getAddress())
 
             const transferCalldata = encodeTransferNativeCoin(await owner1.getAddress(), 10)
@@ -111,7 +111,7 @@ describe('=> MultiSigVerifyAndExecuteFacet', () => {
 
             await expect(multiSigVerifyAndExecuteDiamond.verifyExecute(signers, signatures, transferCalldata, Number(await getNonce(multiSigVerifyAndExecuteDiamond)) + 1)).to.revertedWithCustomError(multiSigVerifyAndExecuteDiamond, "InvalidNonce")
         })
-        it("Should revert if signer length is smaller than threshold", async () => {
+        it('Should revert if signer length is smaller than threshold', async () => {
             await fund(await nativeCoinTransferDiamond.getAddress())
 
             const transferCalldata = encodeTransferNativeCoin(await owner1.getAddress(), 10)
@@ -125,7 +125,7 @@ describe('=> MultiSigVerifyAndExecuteFacet', () => {
 
             await expect(multiSigVerifyAndExecuteDiamond.verifyExecute(modifiedSigners, modifiedSignatures, transferCalldata, Number(await getNonce(multiSigVerifyAndExecuteDiamond)))).to.revertedWithCustomError(multiSigVerifyAndExecuteDiamond, "InvalidSignerLength")
         })
-        it("Should revert if length of signer and signature is different", async () => {
+        it('Should revert if length of signer and signature is different', async () => {
             await fund(await nativeCoinTransferDiamond.getAddress())
 
             const transferCalldata = encodeTransferNativeCoin(await owner1.getAddress(), 10)
