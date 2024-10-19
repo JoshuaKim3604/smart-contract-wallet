@@ -2,13 +2,17 @@
 pragma solidity 0.8.27;
 
 import { LibMultiSigStorage } from "../libraries/LibMultiSigStorage.sol";
+import { SelfCallChecker } from "./utils/SelfCallChecker.sol";
 
-contract OwnerManagerFacet {
+contract OwnerManagerFacet is SelfCallChecker {
 
     address internal constant SENTINEL_OWNERS = address(0x1);
     address internal immutable self;
 
-    error CallerNotSelf();
+    event OwnerAdded(address newOwner);
+    event OwnerRemoved(address removedOwner);
+    event ThresholdChanged(uint256 newThreshold);
+
     error InvalidCallRoute();
     error AlreadySetup();
     error OwnerLengthTooShort();
@@ -17,10 +21,6 @@ contract OwnerManagerFacet {
     error InvalidPreviousOwner();
     error InvalidThreshold();
     error ZeroThreshold();
-
-    event OwnerAdded(address newOwner);
-    event OwnerRemoved(address removedOwner);
-    event ThresholdChanged(uint256 newThreshold);
 
     constructor() {
         self = address(this);
@@ -51,10 +51,9 @@ contract OwnerManagerFacet {
         ds.threshold = _threshold;
     }
     
-    function addOwner(address newOwner) external {
+    function addOwner(address newOwner) external enforceSelfCall {
         LibMultiSigStorage.MultiSigStorage storage ds = LibMultiSigStorage.multiSigStorage();
 
-        require(msg.sender == address(this), CallerNotSelf());
         require(newOwner != address(0) && newOwner != SENTINEL_OWNERS && newOwner != address(this), InvalidOwnerAddress());
         
         ds.owners[newOwner] = ds.owners[SENTINEL_OWNERS];
@@ -64,10 +63,9 @@ contract OwnerManagerFacet {
         emit OwnerAdded(newOwner);
     }
 
-    function removeOwner(address prevOwner, address owner) external {
+    function removeOwner(address prevOwner, address owner) external enforceSelfCall {
         LibMultiSigStorage.MultiSigStorage storage ds = LibMultiSigStorage.multiSigStorage();
 
-        require(msg.sender == address(this), CallerNotSelf());
         require(owner != address(0) && owner != SENTINEL_OWNERS, InvalidOwnerAddress());
         require(ds.owners[prevOwner] == owner, InvalidPreviousOwner());
         require(ds.ownerCount - 1 >= ds.threshold, OwnerLengthTooShort());
@@ -79,10 +77,8 @@ contract OwnerManagerFacet {
         emit OwnerRemoved(owner);
     }
 
-    function changeThreshold(uint _threshold) external {
+    function changeThreshold(uint _threshold) external enforceSelfCall {
         LibMultiSigStorage.MultiSigStorage storage ds = LibMultiSigStorage.multiSigStorage();
-
-        require(msg.sender == address(this), CallerNotSelf());
 
         require(_threshold <= ds.ownerCount, InvalidThreshold());
         require(_threshold > 0, ZeroThreshold());

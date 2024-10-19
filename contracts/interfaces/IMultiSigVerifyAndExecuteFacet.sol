@@ -6,7 +6,7 @@ interface IMultiSigVerifyAndExecuteFacet {
     function verifyExecute(
         address[] calldata signers,
         bytes[] calldata signatures,
-        bytes calldata calldata,
+        bytes calldata _calldata,
         uint256 nonce
     ) external;
 

@@ -1,13 +1,22 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.27;
 
-import { LibVoteStorage } from '../libraries/LibVoteStorage.sol';
-import { LibValidator } from '../libraries/LibValidator.sol';
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import { LibVoteStorage } from '../libraries/LibVoteStorage.sol';
+import { LibValidator } from '../libraries/LibValidator.sol';
 import { ITokenTransferFacet } from '../interfaces/ITokenTransferFacet.sol';
 
 contract TokenTransferFacet is ITokenTransferFacet {
+
+    uint64 constant MIN_DURATION = 60 * 30;
+    uint128 constant SECURITY_WINDOW = 60 * 60 * 24 * 7;
+    uint256 constant FOR = 1;
+    uint256 constant AGAINST = 2;
+
+    event ProposalCreated(bytes32 proposalHash, LibVoteStorage.Proposal proposal);
+    event ProposalVoted(bytes32 proposalHash, bool voteFor, address signer);
+    event ProposalExecuted(bytes32 proposalHash);
 
     error InvalidTo();
     error InvalidToken();
@@ -24,15 +33,6 @@ contract TokenTransferFacet is ITokenTransferFacet {
     error DurationPassed();
     error AlreadyVoted();
     error DurationNotPassed();
-
-    event ProposalCreated(bytes32 proposalHash, LibVoteStorage.Proposal proposal);
-    event ProposalVoted(bytes32 proposalHash, bool voteFor, address signer);
-    event ProposalExecuted(bytes32 proposalHash);
-
-    uint64 constant MIN_DURATION = 60 * 30;
-    uint128 constant SECURITY_WINDOW = 60 * 60 * 24 * 7;
-    uint256 constant FOR = 1;
-    uint256 constant AGAINST = 2;
 
     function createProposal(
         LibVoteStorage.Proposal calldata proposal

@@ -1,20 +1,17 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.27;
 
-import { IDiamondCutFacet } from "../interfaces/IDiamondCutFacet.sol";
 import { LibDiamond } from "../libraries/LibDiamond.sol";
+import { IDiamondCutFacet } from "../interfaces/IDiamondCutFacet.sol";
+import { SelfCallChecker } from "./utils/SelfCallChecker.sol";
 
-contract DiamondCutFacet is IDiamondCutFacet {
-
-    error CallerNotSelf();
+contract DiamondCutFacet is IDiamondCutFacet, SelfCallChecker {
 
     function diamondCut(
         FacetCut[] calldata _diamondCut,
         address _init,
         bytes calldata _calldata
-    ) external override {
-        require(msg.sender == address(this), CallerNotSelf());
-
+    ) external override enforceSelfCall {
         LibDiamond.diamondCut(_diamondCut, _init, _calldata);
     }
 }

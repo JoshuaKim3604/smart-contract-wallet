@@ -15,9 +15,9 @@ interface IDiamondCutFacet {
     function diamondCut(
         FacetCut[] calldata diamondCut,
         address init,
-        bytes calldata calldata
+        bytes calldata _calldata
     ) external;
 
-    event DiamondCut(FacetCut[] diamondCut, address init, bytes calldata);
+    event DiamondCut(FacetCut[] diamondCut, address init, bytes _calldata);
 
 }
