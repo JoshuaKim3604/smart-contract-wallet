@@ -4,10 +4,10 @@ pragma solidity 0.8.27;
 interface IMultiSigVerifyAndExecuteFacet {
 
     function verifyExecute(
-        address[] calldata _signers,
-        bytes[] calldata _signature,
-        bytes calldata _calldata,
-        uint256 _salt
+        address[] calldata signers,
+        bytes[] calldata signatures,
+        bytes calldata calldata,
+        uint256 nonce
     ) external;
 
     function getNonce() external view returns (uint256);

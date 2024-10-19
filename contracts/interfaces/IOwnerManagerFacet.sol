@@ -9,7 +9,7 @@ interface IOwnerManagerFacet {
 
     function removeOwner(address prevOwner, address owner) external;
 
-    function changeThreshold(uint _threshold) external;
+    function changeThreshold(uint threshold) external;
 
     function getOwners() external view returns (address[] memory);
 

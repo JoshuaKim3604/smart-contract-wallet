@@ -3,6 +3,6 @@ pragma solidity 0.8.27;
 
 interface INativeCoinTransferFacet {
 
-    function transferNativeCoin(address _to, uint256 _value) external;
+    function transferNativeCoin(address to, uint256 value) external;
 
 }
