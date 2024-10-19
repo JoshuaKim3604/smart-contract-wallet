@@ -13,7 +13,7 @@ contract MultiSigVerifyAndExecuteFacet {
 
     function verifyExecute(
         address[] calldata _signers,
-        bytes[] calldata _signature,
+        bytes[] calldata _signatures,
         bytes calldata _calldata,
         uint256 _nonce
     ) external {
@@ -27,10 +27,10 @@ contract MultiSigVerifyAndExecuteFacet {
         LibMultiSigStorage.MultiSigStorage storage ds = LibMultiSigStorage
             .multiSigStorage();
         require(ds.nonce == _nonce, InvalidNonce());
-        require(_signers.length == _signature.length, InvalidSignerAndSignatureLength());
+        require(_signers.length == _signatures.length, InvalidSignerAndSignatureLength());
         require(ds.threshold <= _signers.length, InvalidSignerLength());
 
-        LibMultiSig.verifyMultiSig(_signers, _signature, msgHash);
+        LibMultiSig.verifyMultiSig(_signers, _signatures, msgHash);
 
         ++ds.nonce;
 
