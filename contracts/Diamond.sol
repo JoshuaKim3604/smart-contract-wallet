@@ -12,10 +12,6 @@ import { ITokenTransferFacet } from "./interfaces/ITokenTransferFacet.sol";
 
 contract Diamond {
 
-    struct DiamondArgs {
-        address owner;
-    }
-
     constructor(
         address _diamondCutFacet,
         address _diamondLoupeFacet,
@@ -129,12 +125,6 @@ contract Diamond {
         });
 
         LibDiamond.diamondCut(cut, address(0), "");
-
-        LibDiamond.DiamondStorage storage ds;
-        bytes32 position = LibDiamond.DIAMOND_STORAGE_POSITION;
-        assembly {
-            ds.slot := position
-        }
 
         (bool success, bytes memory returndata) = _ownerManagerFacet.delegatecall(abi.encodeWithSelector(IOwnerManagerFacet.setupOwners.selector, _ownerAddresses, _threshold));
         if (!success) {
