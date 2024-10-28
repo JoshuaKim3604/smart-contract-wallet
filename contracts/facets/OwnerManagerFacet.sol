@@ -15,6 +15,7 @@ contract OwnerManagerFacet is IOwnerManagerFacet, SelfCallChecker {
 
     error InvalidCallRoute();
     error AlreadySetup();
+    error AlreadyOwner();
     error OwnerLengthTooShort();
     error InvalidOwnerAddress();
     error DuplicateOwner();
@@ -71,6 +72,7 @@ contract OwnerManagerFacet is IOwnerManagerFacet, SelfCallChecker {
                 newOwner != address(this),
             InvalidOwnerAddress()
         );
+        require(ds.owners[newOwner] == address(0), AlreadyOwner());
 
         ds.owners[newOwner] = ds.owners[SENTINEL_OWNERS];
         ds.owners[SENTINEL_OWNERS] = newOwner;

@@ -129,21 +129,15 @@ contract Diamond {
             functionSelectors: tokenTransferFacetSelectors
         });
 
-        LibDiamond.diamondCut(cut, address(0), "");
-
-        (bool success, bytes memory returndata) = _ownerManagerFacet
-            .delegatecall(
-                abi.encodeWithSelector(
-                    IOwnerManagerFacet.setupOwners.selector,
-                    _ownerAddresses,
-                    _threshold
-                )
-            );
-        if (!success) {
-            assembly {
-                revert(add(returndata, 0x20), mload(returndata))
-            }
-        }
+        LibDiamond.diamondCut(
+            cut,
+            _ownerManagerFacet,
+            abi.encodeWithSelector(
+                IOwnerManagerFacet.setupOwners.selector,
+                _ownerAddresses,
+                _threshold
+            )
+        );
     }
 
     fallback() external payable {
