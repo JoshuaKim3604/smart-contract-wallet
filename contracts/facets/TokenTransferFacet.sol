@@ -98,7 +98,7 @@ contract TokenTransferFacet is ITokenTransferFacet {
 
             ++voteProposalInfo.forCount;
         } else {
-            vs.proposalVote[proposalHash][signer] == AGAINST;
+            vs.proposalVote[proposalHash][signer] = AGAINST;
 
             ++voteProposalInfo.againstCount;
         }
