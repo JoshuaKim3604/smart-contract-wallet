@@ -31,7 +31,7 @@ contract OwnerManagerFacet is IOwnerManagerFacet, SelfCallChecker {
         address[] calldata _owners,
         uint256 _threshold
     ) external override {
-        require(address(this) != self, InvalidCallRoute());
+        require(address(this) != self, InvalidCallRoute()); // OnlyDelegateCall
 
         LibMultiSigStorage.MultiSigStorage storage ds = LibMultiSigStorage
             .multiSigStorage();

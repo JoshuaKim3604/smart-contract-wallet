@@ -37,7 +37,7 @@ library LibMultiSig {
                 InvalidSigner()
             );
 
-            signer = lastSigner;
+            lastSigner = signer;
         }
     }
 }

@@ -105,3 +105,16 @@ export const increaseTime = async (duration: string | number) => {
     await ethers.provider.send("evm_increaseTime", [duration])
     await ethers.provider.send("evm_mine", [])
 }
+
+export const sortAddresses = async (signerArray: Signer[]) => {
+    const signersWithAddress = await Promise.all(
+        signerArray.map(async (signer) => ({
+            signer,
+            address: await signer.getAddress(),
+        }))
+    );
+    
+    signersWithAddress.sort((a, b) => a.address.toLowerCase().localeCompare(b.address.toLowerCase()));
+    
+    return signersWithAddress.map(item => item.signer);
+}

@@ -2,7 +2,7 @@ import { ethers } from 'hardhat'
 import { facetFixture, testFacetFixture } from './utils/fixtures/facets'
 import { diamondFixture, diamondAsFacetFixture } from './utils/fixtures/diamond'
 import { Signer } from 'ethers'
-import { generateOperationHash, signMsgHash, fund, getNonce, encodeTransferNativeCoin } from './utils/helpers'
+import { generateOperationHash, signMsgHash, fund, getNonce, encodeTransferNativeCoin, sortAddresses } from './utils/helpers'
 import { Diamond, DiamondCutFacet, DiamondLoupeFacet, GetTokenFacet, MultiSigVerifyAndExecuteFacet, NativeCoinTransferFacet, OwnerManagerFacet, TestFacet, TokenTransferFacet } from '../typechain-types'
 import { expect } from 'chai'
 
@@ -95,7 +95,9 @@ describe('=> MultiSigVerifyAndExecuteFacet', () => {
 
             const { operationHash } = generateOperationHash(chainId.toString(), await diamond.getAddress(), transferCalldata, Number(await multiSigVerifyAndExecuteDiamond.getNonce()))
 
-            const { signers, signatures } = await signMsgHash(ownerList, operationHash)
+            const sortedSigners = await sortAddresses(ownerList)
+
+            const { signers, signatures } = await signMsgHash(sortedSigners, operationHash)
 
             await expect(multiSigVerifyAndExecuteDiamond.verifyExecute(signers, signatures, transferCalldata, Number(await getNonce(multiSigVerifyAndExecuteDiamond)))).to.emit(nativeCoinTransferDiamond, "NativeCoinTransferred")
             expect(await ethers.provider.getBalance(await testFacet.getAddress())).to.equal(10)

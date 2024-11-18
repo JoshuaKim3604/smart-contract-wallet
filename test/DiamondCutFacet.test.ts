@@ -2,7 +2,7 @@ import { ethers } from 'hardhat'
 import { facetFixture, testFacetFixture, test2FacetFixture, test3FacetFixture } from './utils/fixtures/facets'
 import { diamondFixture, diamondAsFacetFixture } from './utils/fixtures/diamond'
 import { Signer, ZeroAddress } from 'ethers'
-import { diamondCut, generateOperationHash, getSelectors, signMsgHash, FacetCutAction, encodeDiamondCut, fund, getNonce } from './utils/helpers'
+import { diamondCut, generateOperationHash, getSelectors, signMsgHash, FacetCutAction, encodeDiamondCut, fund, getNonce, sortAddresses } from './utils/helpers'
 import { Diamond, DiamondCutFacet, DiamondLoupeFacet, GetTokenFacet, MultiSigVerifyAndExecuteFacet, NativeCoinTransferFacet, OwnerManagerFacet, TestFacet, Test2Facet, TokenTransferFacet, Test3Facet } from '../typechain-types'
 import { expect } from 'chai'
 
@@ -98,16 +98,20 @@ describe('=> DiamondCutFacet', () => {
         const cut = diamondCut(await test2Facet.getAddress(), FacetCutAction.Add, getSelectors(test2Facet))
         const diamondCutCalldata = encodeDiamondCut(cut, ZeroAddress, "0x00")
         const { operationHash, msgHash } = generateOperationHash(chainId.toString(), await diamond.getAddress(), diamondCutCalldata, Number(await getNonce(multiSigVerifyAndExecuteDiamond)))
-        const { signers, signatures } = await signMsgHash(ownerList, operationHash)
+        
+        const adf = await sortAddresses(ownerList)
+        const { signers, signatures } = await signMsgHash(adf, operationHash)
+
         await expect(multiSigVerifyAndExecuteDiamond.verifyExecute(signers, signatures, diamondCutCalldata, Number(await getNonce(multiSigVerifyAndExecuteDiamond)))).to.emit(diamondCutDiamond, "DiamondCut")
     })
     describe('# diamondCut', () => {
         it('Should cut facet(Add) for diamond', async () => {
-
             const cut = diamondCut(await testFacet.getAddress(), FacetCutAction.Add, getSelectors(testFacet))
             const diamondCutCalldata = encodeDiamondCut(cut, ZeroAddress, "0x00")
             const { operationHash, msgHash } = generateOperationHash(chainId.toString(), await diamond.getAddress(), diamondCutCalldata, Number(await getNonce(multiSigVerifyAndExecuteDiamond)))
-            const { signers, signatures } = await signMsgHash(ownerList, operationHash)
+            const sortedSigners = await sortAddresses(ownerList)
+            
+            const { signers, signatures } = await signMsgHash(sortedSigners, operationHash)
 
             await expect(multiSigVerifyAndExecuteDiamond.verifyExecute(signers, signatures, diamondCutCalldata, Number(await getNonce(multiSigVerifyAndExecuteDiamond)))).to.emit(diamondCutDiamond, "DiamondCut")
 
@@ -118,7 +122,9 @@ describe('=> DiamondCutFacet', () => {
             const cut = diamondCut(ZeroAddress, FacetCutAction.Remove, getSelectors(test2Facet))
             const diamondCutCalldata = encodeDiamondCut(cut, ZeroAddress, "0x00")
             const { operationHash, msgHash } = generateOperationHash(chainId.toString(), await diamond.getAddress(), diamondCutCalldata, Number(await getNonce(multiSigVerifyAndExecuteDiamond)))
-            const { signers, signatures } = await signMsgHash(ownerList, operationHash)
+            const sortedSigners = await sortAddresses(ownerList)
+
+            const { signers, signatures } = await signMsgHash(sortedSigners, operationHash)
 
             await expect(multiSigVerifyAndExecuteDiamond.verifyExecute(signers, signatures, diamondCutCalldata, Number(await getNonce(multiSigVerifyAndExecuteDiamond)))).to.emit(diamondCutDiamond, "DiamondCut")
 
@@ -126,11 +132,12 @@ describe('=> DiamondCutFacet', () => {
         })
     
         it('Should cut facet(Replace) for diamond', async () => {
-
             const cut = diamondCut(await test3Facet.getAddress(), FacetCutAction.Replace, getSelectors(test3Facet))
             const diamondCutCalldata = encodeDiamondCut(cut, ZeroAddress, "0x00")
             const { operationHash, msgHash } = generateOperationHash(chainId.toString(), await diamond.getAddress(), diamondCutCalldata, Number(await getNonce(multiSigVerifyAndExecuteDiamond)))
-            const { signers, signatures } = await signMsgHash(ownerList, operationHash)
+            const sortedSigners = await sortAddresses(ownerList)
+
+            const { signers, signatures } = await signMsgHash(sortedSigners, operationHash)
 
             await expect(multiSigVerifyAndExecuteDiamond.verifyExecute(signers, signatures, diamondCutCalldata, Number(await getNonce(multiSigVerifyAndExecuteDiamond)))).to.emit(diamondCutDiamond, "DiamondCut")
 
@@ -138,7 +145,6 @@ describe('=> DiamondCutFacet', () => {
         })
         it('Should revert if caller is not self', async () => {
             const cut = diamondCut(await testFacet.getAddress(), FacetCutAction.Add, getSelectors(testFacet))
-            const diamondCutData = [cut, ZeroAddress, "0x00"]
             
             await expect(diamondCutFacet.diamondCut(cut, ZeroAddress, "0x00")).to.be.revertedWithCustomError(diamondCutFacet, "CallerNotSelf")
             
@@ -148,7 +154,9 @@ describe('=> DiamondCutFacet', () => {
             const cut = diamondCut(await owner1.getAddress(), FacetCutAction.Add, getSelectors(testFacet))
             const diamondCutCalldata = encodeDiamondCut(cut, ZeroAddress, "0x00")
             const { operationHash, msgHash } = generateOperationHash(chainId.toString(), await diamond.getAddress(), diamondCutCalldata, Number(await getNonce(multiSigVerifyAndExecuteDiamond)))
-            const { signers, signatures } = await signMsgHash(ownerList, operationHash)
+            const sortedSigners = await sortAddresses(ownerList)
+
+            const { signers, signatures } = await signMsgHash(sortedSigners, operationHash)
 
             await expect(multiSigVerifyAndExecuteDiamond.verifyExecute(signers, signatures, diamondCutCalldata, Number(await getNonce(multiSigVerifyAndExecuteDiamond)))).to.be.revertedWith("LibDiamondCut: New facet has no code")
         })
@@ -157,7 +165,9 @@ describe('=> DiamondCutFacet', () => {
             const cut = diamondCut(await testFacet.getAddress(), FacetCutAction.Add, getSelectors(testFacet))
             const diamondCutCalldata = encodeDiamondCut(cut, ZeroAddress, await owner1.getAddress())
             const { operationHash, msgHash } = generateOperationHash(chainId.toString(), await diamond.getAddress(), diamondCutCalldata, Number(await getNonce(multiSigVerifyAndExecuteDiamond)))
-            const { signers, signatures } = await signMsgHash(ownerList, operationHash)
+            const sortedSigners = await sortAddresses(ownerList)
+
+            const { signers, signatures } = await signMsgHash(sortedSigners, operationHash)
 
             await expect(multiSigVerifyAndExecuteDiamond.verifyExecute(signers, signatures, diamondCutCalldata, Number(await getNonce(multiSigVerifyAndExecuteDiamond)))).to.emit(diamondCutDiamond, "DiamondCut")
 

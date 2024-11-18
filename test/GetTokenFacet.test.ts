@@ -2,7 +2,7 @@ import { ethers } from 'hardhat'
 import { facetFixture } from './utils/fixtures/facets'
 import { diamondFixture, diamondAsFacetFixture } from './utils/fixtures/diamond'
 import { Signer, ZeroAddress } from 'ethers'
-import { Diamond, DiamondCutFacet, DiamondLoupeFacet, GetTokenFacet, MultiSigVerifyAndExecuteFacet, NativeCoinTransferFacet, OwnerManagerFacet, TestFacet, TokenTransferFacet } from '../typechain-types'
+import { Diamond, DiamondCutFacet, DiamondLoupeFacet, GetTokenFacet, MultiSigVerifyAndExecuteFacet, NativeCoinTransferFacet, OwnerManagerFacet, TokenTransferFacet } from '../typechain-types'
 import { expect } from 'chai'
 
 describe('=> GetTokenFacet', () => {
@@ -21,11 +21,9 @@ describe('=> GetTokenFacet', () => {
     let nativeCoinTransferDiamond: NativeCoinTransferFacet
     let ownerManagerDiamond: OwnerManagerFacet
     let tokenTransferDiamond: TokenTransferFacet
-    let testDiamond: TestFacet
 
     let diamond: Diamond
     let threshold: number = 4
-    let chainId: bigint
 
     let owner1: Signer;
     let owner2: Signer;
@@ -35,8 +33,6 @@ describe('=> GetTokenFacet', () => {
 
     before(async () => {
         [owner1, owner2, owner3, owner4, owner5] = await ethers.getSigners();
-
-        chainId = (await ethers.provider.getNetwork()).chainId;
     })
     beforeEach(async () => {
         ({
